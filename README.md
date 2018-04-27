@@ -255,7 +255,9 @@ or even
 
 ```c++
 auto dummy = { true, ret = ret && Filters::evaluate( card )... }; 
-// The "true" value here is to support the zero types case on the parameter pack and the auto being able to determine the type (std::initializer_list<bool>). 
+
+// The "true" value here is to support the zero types case on the parameter pack
+// and the auto being able to determine the type (std::initializer_list<bool>). 
 ```
 
 So instead of creating an array with all the issues of the size that we saw we can create an `std::initializer_list` instead (that by default supports the zero elements case). As I said for our purposes it will suffice but it has some restrictions, the most important one is the fact that you cannot call functions that returns `void` as `std::initializer_list<void>` is not allowed and won't compile. 
@@ -322,6 +324,4 @@ This may not be the best solution for all the cases, if the performance is a con
 
 I would say that the more important takeover from this article is that developing something new in an extensive code base doesn't mean, or justify, that we should just copy-paste from other system that just works, we should think about the possibilities, evaluate our restrictions and necessities and then decide what fits best, if in the way you also learn something new that's even better!. Don't let the production times drive your code decisions!. 
 
-Overall this implementation gives us a lot of advantages, including our most important goal: scalability; in our case performance wasn't an issue so it fit perfectly and let me tell you one last thing: 
-
->Damn! It was fun to build! :) 
+Overall this implementation gives us a lot of advantages, including our most important goal: scalability; in our case performance wasn't an issue so it fit perfectly and let me tell you one last thing: Damn! It was fun to build! :) 

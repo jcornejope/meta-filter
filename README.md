@@ -323,13 +323,13 @@ Since C++17 we have a better and easier way to expand parameter packs: [fold exp
 With this feature we can simplify our `MetaFilter::evaluate` function code:
 
 ```c++ 
-( ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+( ..., ( ret = ret && MoreFilters::evaluate( card ) ) );
 ```
 
 There are four versions of fold expressions that expands the parameter packs from left to right, right to left, with and without initialization expression. In case of the _comma operator_ _fold expression_ the result of left and right is the same so effectively are just two. We could initialize the `bool ret` inside the _fold expression_ if we like:
 
 ```c++ 
-( ( ret = Filter::evaluate( card ) ), ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+( ( ret = Filter::evaluate( card ) ), ..., ( ret = ret && MoreFilters::evaluate( card ) ) );
 ```
 
 In any case you can see that fold expressions will help a lot with all this problem. Here's the final code updated to C++17:
@@ -341,7 +341,7 @@ struct MetaFilter : public Filter, public MoreFilters...
 	bool evaluate( Card const& card ) 
 	{ 
 		bool ret = Filter::evaluate( card );
-        	( ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+        	( ..., ( ret = ret && MoreFilters::evaluate( card ) ) );
         	return ret;
 	} 
 }; 

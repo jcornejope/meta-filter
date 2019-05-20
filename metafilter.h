@@ -60,11 +60,23 @@ struct VersionFilter
 template <typename Filter = EmptyFilter, typename ...MoreFilters>
 struct MetaFilter : public Filter, public MoreFilters...
 {
+#if __cplusplus >= 201703L	// Please note that Visual Studio 2017 has a bug and __cplusplus is still not updated when using c++17 features.
+    // C++17 (fold expressions)
     bool evaluate( Card const& card )
     {
         bool ret = Filter::evaluate( card );
-        int dummy[sizeof...(MoreFilters)+1] = { ( ret = ret && MoreFilters::evaluate( card ), 0 )... };
+        ( ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+        return ret;
+    }
+#else
+    // C++11
+    bool evaluate( Card const& card )
+    {
+        bool ret = Filter::evaluate( card );
+        int dummy[sizeof...(MoreFilters)+1] = { ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ), 0 )... };
         (void)dummy;
         return ret;
     }
+#endif
 };
+

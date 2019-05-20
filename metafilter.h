@@ -65,15 +65,15 @@ struct MetaFilter : public Filter, public MoreFilters...
     bool evaluate( Card const& card )
     {
         bool ret = Filter::evaluate( card );
-        ( ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+        ( ..., ( ret = ret && MoreFilters::evaluate( card ) ) );
         return ret;
     }
 #else
     // C++11
     bool evaluate( Card const& card )
     {
-        bool ret = Filter::evaluate( card );
-        int dummy[sizeof...(MoreFilters)+1] = { ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ), 0 )... };
+        bool ret = Filter::evaluate( card ); 
+        int dummy[sizeof...(MoreFilters)+1] = { ( ret = ret && MoreFilters::evaluate( card ), 0 )... };
         (void)dummy;
         return ret;
     }

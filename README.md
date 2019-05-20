@@ -316,6 +316,37 @@ struct LeaderFilter
 }; 
 ```
 
+### Update: Fold Expressions from C++17
+
+Since C++17 we have a better and easier way to expand parameter packs: [fold expressions](https://en.cppreference.com/w/cpp/language/fold). They allow us to expand the parameter packs using binary operations instead of having to create the recursive templates or using tricks like the dummy array. The _fold expressions_ works pretty much as the _comma operator_ trick. We can use any of the 32 binary operators supported and we can use expressions so it's quite versatile.
+
+With this feature we can simplify our `MetaFilter::evaluate` function code:
+
+```c++ 
+( ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+```
+
+There are four versions of fold expressions that expands the parameter packs from left to right, right to left, with and without initialization expression. In case of the _comma operator_ _fold expression_ the result of left and right is the same so effectively are just two. We could initialize the `bool ret` inside the _fold expression_ if we like:
+
+```c++ 
+( ( ret = Filter::evaluate( card ) ), ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+```
+
+In any case you can see that fold expressions will help a lot with all this problem. Here's the final code updated to C++17:
+
+```c++ 
+template <typename Filter = EmptyFilter, typename ...MoreFilters> 
+struct MetaFilter : public Filter, public MoreFilters... 
+{ 
+	bool evaluate( Card const& card ) 
+	{ 
+		bool ret = Filter::evaluate( card );
+        	( ..., ( ret = ret && static_cast<MoreFilters const*>( this )->evaluate( card ) ) );
+        	return ret;
+	} 
+}; 
+```
+
 ### Conclusion 
 
 We have created a system that is easier to maintain as each filter is focused on one task, it is easier to understand and to expand if needed, it is modular and more flexible as we can mix and match all the filters we want with the precedence we want. 

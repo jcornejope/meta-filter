@@ -212,7 +212,7 @@ Everything seems fine, isn't it?... ... not really, if you remember we stated be
 int dummy[0]; 
 ```
 
-This is wrong as we cannot allocate an array of constant size 0, it doesn't make sense and actually won't compile. We could live with it an assume that we don't support that case. If that's what we want we can add a `static_assert` to the code in the evaluate function to give a more descriptive error to the users: 
+This is wrong as we cannot allocate an array of constant size 0, it doesn't make sense and actually won't compile. (As a side note please note that allocating it on the heap will actually compile `int* i = new int[0];`, deferrencing this will produce undefinded behaviour and you're still suppose to delete it... c++ you are weird... but we love you :) ). So coming back to our case, we could live with it an assume that we don't support that case. If that's what we want we can add a `static_assert` to the code in the evaluate function to give a more descriptive error to the users: 
 
 ```c++
 static_assert( sizeof...(Filters) > 0, "The MetaFilter doesn't supports empty parameter pack :(" ); 
